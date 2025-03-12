@@ -1,34 +1,82 @@
 /* 
+--------------------------------------------
 Q1: Explain the difference between preemptive and non-preemptive scheduling.
 
-Preemptive scheduling allows a process to be interrupted in the middle of its execution 
-and moved to a ready state so that another process can be executed. Non-preemptive 
-scheduling, once a process starts execution, cannot be interrupted until it finishes.
 
-Q2: Consider the following set of processes, with the length of the CPU burst time given in milliseconds:
-Process | Burst Time | Priority
-P1      | 2          | 2
-P2      | 1          | 1
-P3      | 8          | 4
-P4      | 4          | 2
-P5      | 5          | 3
+Preemptive scheduling allows a process to be interrupted in the middle of execution so that another process with higher priority or shorter burst time can execute. It enables better response time and fairness in a multitasking system.
+Example: Round Robin, Preemptive Priority Scheduling.
 
-Assume all processes arrive at time 0 in order P1, P2, P3, P4, P5.
+Non-preemptive scheduling does not allow interruption of a running process. Once a process starts its execution, it runs to completion. It is simpler but can lead to poor response time.
+Example: First Come First Serve (FCFS), Shortest Job First (Non-preemptive).
 
-a. Draw Gantt charts for FCFS, SJF, Non-preemptive Priority, and Round Robin (quantum=2). (To be drawn manually or in report)
-b. Compute Turnaround Time for each process in each scheduling.
-c. Compute Waiting Time for each process in each scheduling.
-d. Which algorithm gives minimum average waiting time? (Expected SJF)
+--------------------------------------------
+Q2: Processes, Burst Time, Priority:
 
-Q3: Consider two processes P1 and P2, where p1=50, t1=25, p2=75, t2=30.
-a. Can these be scheduled using rate-monotonic scheduling? Explain with a Gantt chart.
-b. Illustrate scheduling using earliest-deadline-first (EDF). (To be done manually)
 
-Q4: Write a program (Java) that computes turnaround time and waiting time for processes listed in Q2 for FCFS and SJF.
+| Process | Burst Time | Priority |
+|--------|------------|---------|
+| P1     | 2          | 2       |
+| P2     | 1          | 1       |
+| P3     | 8          | 4       |
+| P4     | 4          | 2       |
+| P5     | 5          | 3       |
+
+**Arrival Time: 0 for all processes**
+
+a. Gantt Charts:
+
+1. FCFS:  | P1 | P2 | P3 | P4 | P5 | 
+          0   2   3  11  15  20
+
+2. SJF:   | P2 | P1 | P4 | P5 | P3 |
+          0   1   3   7  12  20
+
+3. Priority: | P3 | P5 | P1 | P4 | P2 |
+             0   8  13  15  19  20
+
+4. RR (q=2): | P1 | P2 | P3 | P4 | P5 | P3 | P4 | P5 | P3 | P5 | P3 |
+              0   2   3   5   7   9  11  13  15  17  18  20
+
+--------------------------------------------
+b. Turnaround Time (Completion Time - Arrival Time):
+
+| Process | FCFS TAT | SJF TAT | Priority TAT | RR TAT |
+|--------|---------|--------|-------------|-------|
+| P1     | 2       | 3      | 15          | 2     |
+| P2     | 3       | 1      | 20          | 3     |
+| P3     | 11      | 20     | 8           | 20    |
+| P4     | 15      | 7      | 19          | 13    |
+| P5     | 20      | 12     | 13          | 18    |
+
+
+c. Waiting Time (Turnaround Time - Burst Time):
+
+| Process | FCFS WT | SJF WT | Priority WT | RR WT |
+|--------|--------|------|-----------|------|
+| P1     | 0      | 1    | 13        | 0    |
+| P2     | 2      | 0    | 19        | 2    |
+| P3     | 3      | 12   | 0         | 12   |
+| P4     | 11     | 3    | 15        | 9    |
+| P5     | 15     | 7    | 8         | 13   |
+
+
+d. Which algorithm gives minimum average waiting time?
+Answer: **Shortest Job First (SJF)** with average waiting time of 4.6 ms.
+
+--------------------------------------------
+Q3: Scheduling for P1 (p1=50, t1=25), P2 (p2=75, t2=30):
+
+a. Rate Monotonic Scheduling:
+P1 and P2 can be scheduled using RMS if they meet utilization bound and priorities based on periods.
+(Suggested to draw Gantt chart in report)
+
+b. Earliest Deadline First (EDF):
+Processes scheduled dynamically based on nearest deadline.
+
+--------------------------------------------
+Q4: Java Program to calculate FCFS and SJF turnaround/waiting time.
 
 */
-
-// Java Program to calculate FCFS and SJF Turnaround and Waiting times
 
 import java.util.*;
 
@@ -41,7 +89,7 @@ class Process {
     }
 }
 
-public class Scheduler {
+public class SchedulingAnalysis {
 
     // Function to calculate waiting and turnaround time for FCFS
     public static void fcfs(Process[] processes) {
