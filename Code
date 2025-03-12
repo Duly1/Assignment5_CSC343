@@ -1,0 +1,118 @@
+/* 
+Q1: Explain the difference between preemptive and non-preemptive scheduling.
+
+Preemptive scheduling allows a process to be interrupted in the middle of its execution 
+and moved to a ready state so that another process can be executed. Non-preemptive 
+scheduling, once a process starts execution, cannot be interrupted until it finishes.
+
+Q2: Consider the following set of processes, with the length of the CPU burst time given in milliseconds:
+Process | Burst Time | Priority
+P1      | 2          | 2
+P2      | 1          | 1
+P3      | 8          | 4
+P4      | 4          | 2
+P5      | 5          | 3
+
+Assume all processes arrive at time 0 in order P1, P2, P3, P4, P5.
+
+a. Draw Gantt charts for FCFS, SJF, Non-preemptive Priority, and Round Robin (quantum=2). (To be drawn manually or in report)
+b. Compute Turnaround Time for each process in each scheduling.
+c. Compute Waiting Time for each process in each scheduling.
+d. Which algorithm gives minimum average waiting time? (Expected SJF)
+
+Q3: Consider two processes P1 and P2, where p1=50, t1=25, p2=75, t2=30.
+a. Can these be scheduled using rate-monotonic scheduling? Explain with a Gantt chart.
+b. Illustrate scheduling using earliest-deadline-first (EDF). (To be done manually)
+
+Q4: Write a program (Java) that computes turnaround time and waiting time for processes listed in Q2 for FCFS and SJF.
+
+*/
+
+// Java Program to calculate FCFS and SJF Turnaround and Waiting times
+
+import java.util.*;
+
+class Process {
+    int id, burstTime, waitingTime, turnaroundTime;
+
+    Process(int id, int burstTime) {
+        this.id = id;
+        this.burstTime = burstTime;
+    }
+}
+
+public class Scheduler {
+
+    // Function to calculate waiting and turnaround time for FCFS
+    public static void fcfs(Process[] processes) {
+        int n = processes.length;
+        processes[0].waitingTime = 0;
+        processes[0].turnaroundTime = processes[0].burstTime;
+
+        for (int i = 1; i < n; i++) {
+            processes[i].waitingTime = processes[i - 1].waitingTime + processes[i - 1].burstTime;
+            processes[i].turnaroundTime = processes[i].waitingTime + processes[i].burstTime;
+        }
+
+        printResults("FCFS", processes);
+    }
+
+    // Function to calculate waiting and turnaround time for SJF
+    public static void sjf(Process[] processes) {
+        int n = processes.length;
+        Arrays.sort(processes, Comparator.comparingInt(p -> p.burstTime)); // Sort by burst time
+
+        processes[0].waitingTime = 0;
+        processes[0].turnaroundTime = processes[0].burstTime;
+
+        for (int i = 1; i < n; i++) {
+            processes[i].waitingTime = processes[i - 1].waitingTime + processes[i - 1].burstTime;
+            processes[i].turnaroundTime = processes[i].waitingTime + processes[i].burstTime;
+        }
+
+        printResults("SJF", processes);
+    }
+
+    // Function to print results
+    public static void printResults(String algoName, Process[] processes) {
+        System.out.println("\n---------------- " + algoName + " ----------------");
+        System.out.printf("%-10s %-15s %-15s\n", "Process ID", "Waiting Time", "Turnaround Time");
+
+        int totalWaiting = 0, totalTurnaround = 0;
+        for (Process p : processes) {
+            System.out.printf("%-10d %-15d %-15d\n", p.id, p.waitingTime, p.turnaroundTime);
+            totalWaiting += p.waitingTime;
+            totalTurnaround += p.turnaroundTime;
+        }
+
+        double avgWaiting = (double) totalWaiting / processes.length;
+        double avgTurnaround = (double) totalTurnaround / processes.length;
+
+        System.out.println("Average Waiting Time: " + avgWaiting);
+        System.out.println("Average Turnaround Time: " + avgTurnaround);
+    }
+
+    // Main function
+    public static void main(String[] args) {
+        // Process list as per question
+        Process[] processList1 = {
+                new Process(1, 2), // P1
+                new Process(2, 1), // P2
+                new Process(3, 8), // P3
+                new Process(4, 4), // P4
+                new Process(5, 5)  // P5
+        };
+
+        // Copying process list for separate SJF calculation to avoid in-place sorting affecting FCFS
+        Process[] processList2 = {
+                new Process(1, 2), // P1
+                new Process(2, 1), // P2
+                new Process(3, 8), // P3
+                new Process(4, 4), // P4
+                new Process(5, 5)  // P5
+        };
+
+        fcfs(processList1); // FCFS scheduling
+        sjf(processList2);  // SJF scheduling
+    }
+}
